@@ -3,20 +3,27 @@ import { createConfig,http } from "wagmi";
 // 代表以太坊主网
 import { mainnet } from "wagmi/chains";
 // Ant Design Web3 用来接收 wagmi 配置的 Provider
-import { WagmiWeb3ConfigProvider } from "@ant-design/web3-wagmi";
-import { Address, NFTCard } from "@ant-design/web3";
+import { WagmiWeb3ConfigProvider, MetaMask } from "@ant-design/web3-wagmi";
+import { Address, NFTCard, Connector, ConnectButton } from "@ant-design/web3";
+import { injected } from "wagmi/connectors";
 
 // 完成 wagmi 的基础配置
+// https://api.zan.top/node/v1/eth/mainnet/0860789265ba48c6a39de61b09ae7453
 const config = createConfig({
     chains: [mainnet],
     transports: {
-        [mainnet.id]: http('https://api.zan.top/node/v1/eth/mainnet/0860789265ba48c6a39de61b09ae7453')
-    }
+        [mainnet.id]: http()
+    },
+    connectors: [
+        injected({
+            target: "metaMask",
+        })
+    ]
 })
 
 export default function Web3() {
     return (
-        <WagmiWeb3ConfigProvider config={config}>
+        <WagmiWeb3ConfigProvider config={config} wallets={[MetaMask()]}>
             <div style={{
                 height: "100vh",
                 padding: 64
@@ -24,6 +31,9 @@ export default function Web3() {
                 {/* 合约地址是OURM NFT */}
                 <Address format address="0xEcd0D12E21805803f70de03B72B1C162dB0898d9" />
                 <NFTCard address="0xEcd0D12E21805803f70de03B72B1C162dB0898d9" tokenId={641} />
+                <Connector>
+                    <ConnectButton />
+                </Connector>
             </div>      
         </WagmiWeb3ConfigProvider>
     )
